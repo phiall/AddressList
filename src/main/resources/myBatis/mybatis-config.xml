@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!--日志，具体其他配置参考压缩包中，pdf说明文档的3.1.2 settings-->
+    <settings>
+        <setting name="logImpl" value="LOG4J"/>
+    </settings>
+
+    <!--mapper映射文件可以直接使用pojo名称作为数据类型-->
+    <typeAliases>
+        <package name="cn.heydong.entity"/>
+    </typeAliases>
+
+    <!--配置mapper映射文件的位置-->
+    <mappers>
+        <package name="cn.heydong.mapper"/>
+    </mappers>
+</configuration>

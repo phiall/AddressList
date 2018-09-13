@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!--这里主要是SpringMVC的配置-->
+
+    <!--视图解析器-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!--指定视图的前缀和后缀，Controller返回的String类型与这里的前后缀拼接，构成返回的视图页面地址-->
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**" />
+            <bean class="cn.heydong.interceptor.LoginInterceptor" />
+        </mvc:interceptor>
+    </mvc:interceptors>
+    <!--将链接中/p的静态的访问路径映射为URL，常用于加载html、js、css、图片、视频等静态资源-->
+    <mvc:resources mapping="/js/**" location="/WEB-INF/js/"/>
+    <mvc:resources mapping="/img/**" location="/WEB-INF/img/"/>
+    <mvc:resources mapping="/css/**" location="/WEB-INF/css/"/>
+    <mvc:resources mapping="/easyui/**" location="/WEB-INF/easyui/"/>
+    <mvc:resources mapping="/data/**" location="/WEB-INF/data/"/>
+    <!--避免IE执行AJAX时，返回JSON出现下载文件 -->
+    <!--<bean id="mappingJacksonHttpMessageConverter"-->
+          <!--class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">-->
+        <!--<property name="supportedMediaTypes">-->
+            <!--<list>-->
+                <!--<value>text/html;charset=UTF-8</value>-->
+            <!--</list>-->
+        <!--</property>-->
+    <!--</bean>-->
+    <!--使用注解-->
+    <mvc:annotation-driven/>
+
+    <!--扫描带有注解的控制类，不可以放在Spring的配置中-->
+    <context:component-scan base-package="cn.heydong.controller"/>
+</beans>

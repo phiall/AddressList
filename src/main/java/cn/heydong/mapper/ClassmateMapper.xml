@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--配置命名空间，指向dao接口-->
+<mapper namespace="cn.heydong.mapper.ClassmateMapper">
+    <!--所有修改数据表记录的操作都会返回int类型-->
+    <!--增加学生，id为接口的对应方法名，parameterType为传入类型，用typeAliases配置可以避免全路径类型-->
+    <insert id="insertClassmate" parameterType="Classmate">
+        INSERT INTO t_classmate (
+            name,
+            password,
+            gender,
+            phone,
+            work_city,
+            work_addr,
+            home_town,
+            home_addr)
+        VALUES (
+            #{name},
+            #{password},
+            #{gender},
+            #{phone},
+            #{workCity},
+            #{workAddr},
+            #{homeTown},
+            #{homeAddr}
+        )
+    </insert>
+    <sql id="selectClassmate">
+        SELECT
+            id,
+            name,
+            gender,
+            password,
+            phone,
+            work_city AS workCity,
+            work_addr AS workAddr,
+            home_town AS homeTown,
+            home_addr AS homeAddr,
+            created_at AS createdAt,
+            updated_at AS updatedAt
+        FROM t_classmate
+    </sql>
+    <!--通过id查询学生，id为接口的对应方法名，parameterType为传入类型，resultType为返回的类型
+    自动根据结果数量判断是否为List集合-->
+    <select id="getClassmateById" parameterType="long" resultType="Classmate">
+        <include refid="selectClassmate" />
+        WHERE id = #{id}
+    </select>
+    <select id="getClassmateByName" parameterType="string" resultType="Classmate">
+        <include refid="selectClassmate" />
+        WHERE name = #{name}
+    </select>
+    <select id="getClassmates" resultType="Classmate">
+        <include refid="selectClassmate" />
+    </select>
+    <!--更新学生信息，如果dao接口的方法中的参数使用了注解，@Param("id") int studentNo
+    #{id}和${id}都可以使用，不然只能使用#{id}，注解中的参数就是大括号中的名称-->
+    <update id="updateClassmate" parameterType="Classmate">
+        UPDATE t_classmate
+        SET
+            name=#{name},
+            password=#{password},
+            gender=#{gender},
+            phone=#{phone},
+            work_city=#(workCity),
+            work_addr=#{workAddr},
+            home_town=#{homeTown},
+            home_addr=#{homeAddr}
+        WHERE id = #{id}
+    </update>
+    <!--删除学生信息-->
+    <delete id="deleteClassmate" parameterType="long">
+        DELETE FROM t_classmate
+        WHERE id = #{id}
+    </delete>
+</mapper>

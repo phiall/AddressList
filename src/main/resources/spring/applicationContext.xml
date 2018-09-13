@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!--加载数据库配置文件-->
+    <context:property-placeholder location="classpath:database.properties"/>
+
+    <!--创建数据源，多例模式-->
+    <bean class="org.springframework.jdbc.datasource.DriverManagerDataSource" id="dataSource">
+        <!--从配置文件中获取对应的值-->
+        <property name="driverClassName" value="${db_driver}"/>
+        <property name="url" value="${db_url}"/>
+        <property name="username" value="${db_username}"/>
+        <property name="password" value="${db_password}"/>
+    </bean>
+
+    <!--事务注解驱动-->
+    <tx:annotation-driven/>
+
+    <!--事务管理器，将数据源注入-->
+    <bean class="org.springframework.jdbc.datasource.DataSourceTransactionManager" id="txManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!--事务通知-->
+    <tx:advice id="txAdvice" transaction-manager="txManager">
+        <tx:attributes>
+            <!--事务传播，默认REQUIRED，这是一个具有事务的方法，没有则创建事务-->
+            <!--事务隔离，默认DEFAULT，此设置是为了解决并发事务中，脏读、不可重复读外、幻读，性能会下降-->
+            <tx:method name="insert*" isolation="SERIALIZABLE" propagation="REQUIRED"/>
+            <tx:method name="delete*"/>
+            <tx:method name="update*"/>
+            <!--只读事务，只做查询，不修改数据的事务。JDBC驱动会进行优化-->
+            <tx:method name="find*" read-only="true"/>
+            <tx:method name="get*" read-only="true"/>
+            <tx:method name="*" read-only="true"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <!--方法增强-->
+    <aop:config>
+        <!--为方法增强事务的实现，所有service中类的方法-->
+        <aop:pointcut id="studentPointcut" expression="execution(* cn.heydong.service.*.*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="studentPointcut"/>
+    </aop:config>
+
+    <!--会话工厂-->
+    <bean class="org.mybatis.spring.SqlSessionFactoryBean" id="sqlSessionFactory">
+        <!--传入数据源-->
+        <property name="dataSource" ref="dataSource"/>
+        <!--指定MyBatis的核心配置文件的位置-->
+        <property name="configLocation" value="classpath:myBatis/mybatis-config.xml"/>
+        <!--其他MyBatis的配置都可以在此进行配置-->
+    </bean>
+
+    <!--扫描Mapper，生成dao的代理对象-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--指定dao的创建位置-->
+        <property name="basePackage" value="cn.heydong.mapper"/>
+    </bean>
+
+    <!--扫描带有注解的业务类，不可以放在SpringMVC的配置中-->
+    <context:component-scan base-package="cn.heydong.service"/>
+</beans>
