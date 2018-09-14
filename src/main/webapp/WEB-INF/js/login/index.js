@@ -92,3 +92,21 @@ function onIndexMainBtnClk(val) {
             break;
     }
 }
+
+
+function openUpload() {
+    $('#uploadFile').click();
+}
+function filesConfirm() {
+    var files = $('#uploadFile').get(0).files;
+    $('#test_div').html('');
+    var str = "";
+    for (var i = 0; i < files.length; i++) {
+        var reader = new FileReader();
+        reader.readAsDataURL(files[i]);
+        reader.onload = function (e) {
+            str += "<img  style='width: auto; height: auto; max-width: 100%; max-height: 100%;text-align: center' id='img' src='" + e.target.result + "'/><br/>";
+            $('#test_div').html(str);
+        }
+    }
+}

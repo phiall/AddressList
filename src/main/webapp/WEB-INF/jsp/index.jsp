@@ -56,7 +56,13 @@
             <div class="panel-header tt-inner">
                 <a href="javascript:void(0)" onclick="onIndexMainBtnClk(2)" class="easyui-linkbutton" data-options="iconCls:'icon-large-shapes',size:'large',iconAlign:'top',plain:true">More</a>
             </div>
-            cd
+            <div>
+                <input type="file" hidden name="uploadFile" multiple id="uploadFile" accept=".gif,.png" onchange="filesConfirm()">
+            </div>
+            <div>
+                <a href="javascript:void(0)" onclick="openUpload()" class="easyui-linkbutton" plain="true" outline="true" style="width:100px;height:35px"><span style="font-size:16px">Upload</span></a>
+            </div>
+            <div style="width: 60%;margin:auto" id="test_div"></div>
         </div>
         <div style="padding:0px">
             <div class="panel-header tt-inner">
