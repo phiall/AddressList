@@ -14,7 +14,7 @@
         http://www.springframework.org/schema/tx/spring-tx.xsd">
 
     <!--加载数据库配置文件-->
-    <context:property-placeholder location="classpath:database.properties"/>
+    <context:property-placeholder location="classpath:*.properties"/>
 
     <!--创建数据源，多例模式-->
     <bean class="org.springframework.jdbc.datasource.DriverManagerDataSource" id="dataSource">
@@ -32,7 +32,6 @@
     <bean class="org.springframework.jdbc.datasource.DataSourceTransactionManager" id="txManager">
         <property name="dataSource" ref="dataSource"/>
     </bean>
-
     <!--事务通知-->
     <tx:advice id="txAdvice" transaction-manager="txManager">
         <tx:attributes>
@@ -72,4 +71,12 @@
 
     <!--扫描带有注解的业务类，不可以放在SpringMVC的配置中-->
     <context:component-scan base-package="cn.heydong.service"/>
+
+
+    <!-- 多部分文件上传 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="defaultEncoding" value="utf-8"></property>
+        <property name="maxUploadSize" value="10485760000"></property>
+        <property name="maxInMemorySize" value="40960"></property>
+    </bean>
 </beans>

@@ -44,4 +44,19 @@
 
     <!--扫描带有注解的控制类，不可以放在Spring的配置中-->
     <context:component-scan base-package="cn.heydong.controller"/>
+    <!-- 多部分文件上传 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="defaultEncoding" value="utf-8"></property>
+        <property name="maxUploadSize" value="10485760000"></property>
+        <property name="maxInMemorySize" value="40960"></property>
+    </bean>
+
+    <bean id="propertyConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:project.properties</value>
+            </list>
+        </property>
+    </bean>
 </beans>
