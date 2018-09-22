@@ -1,12 +1,17 @@
 package cn.heydong.controller;
 
+import cn.heydong.entity.Image;
+import cn.heydong.service.ImageService;
+import cn.heydong.util.UUIDUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
@@ -15,6 +20,8 @@ import java.io.FileOutputStream;
 public class FileController {
     @Value("${upload.file.path}")
     private String fileRoot;
+    @Resource(name="imageService")
+    private ImageService imageService;
     @RequestMapping(value = "Upload.do", method = RequestMethod.POST)
     public String upload(@RequestParam("uploadFiles") MultipartFile []files, HttpServletRequest request) throws RuntimeException {
 
@@ -22,10 +29,20 @@ public class FileController {
             System.out.println("fileName---------->" + files[i].getOriginalFilename());
 
             if(!files[i].isEmpty()){
-                int pre = (int) System.currentTimeMillis();
                 try {
-                    //拿到输出流，同时重命名上传的文件
-                    FileOutputStream os = new FileOutputStream(fileRoot + files[i].getOriginalFilename());
+                    Image image = new Image();
+                    image.setUuid(UUIDUtil.makeUuid());
+                    String orgFileName = files[i].getOriginalFilename();
+                    image.setFileType(orgFileName.indexOf('.') == -1 ? null : orgFileName.split("\\.")[1].toLowerCase());
+                    if(null == image.getFileType()) throw new RuntimeException();
+                    image.setPath(UUIDUtil.makePathName(image.getUuid()));
+                    String desPath = fileRoot + image.getPath();
+                    File pathFile = new File(desPath);
+                    if(!pathFile.exists() && !pathFile.isDirectory()) {
+                        pathFile.mkdirs();
+                    }
+                    String targetFileName = desPath + image.getUuid() + "." + image.getFileType();
+                    FileOutputStream os = new FileOutputStream(targetFileName);
                     //拿到上传文件的输入流
                     FileInputStream in = (FileInputStream) files[i].getInputStream();
 
@@ -37,9 +54,8 @@ public class FileController {
                     os.flush();
                     os.close();
                     in.close();
-                    int finaltime = (int) System.currentTimeMillis();
-                    System.out.println(finaltime - pre);
-
+                    image.setUploadedBy(1);
+                    imageService.insertImage(image);
                 } catch (Exception e) {
                     e.printStackTrace();
                     System.out.println("上传出错");

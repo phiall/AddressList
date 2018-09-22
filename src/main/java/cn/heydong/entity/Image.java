@@ -8,6 +8,7 @@ public class Image {
   private long id;
   private String uuid;
   private String fileType;
+  private String path;
   private long uploadedBy;
   private Date uploadedAt;
 
@@ -38,6 +39,13 @@ public class Image {
     this.fileType = fileType;
   }
 
+  public String getPath() {
+    return path;
+  }
+
+  public void setPath(String path) {
+    this.path = path;
+  }
 
   public long getUploadedBy() {
     return uploadedBy;
